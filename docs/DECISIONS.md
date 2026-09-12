@@ -9,7 +9,7 @@
 
 ### Context
 
-Механика простая, хорошо работает мышью и touch, не требует backend/3D/сложной физики.
+Механика простая, хорошо работает мышью и touch, не требует 3D/сложной физики.
 
 ### Decision
 
@@ -17,11 +17,7 @@
 
 ### Consequences
 
-Любая новая механика должна оправдывать увеличение scope. Магазин, главы, meta-progression и daily mode не входят автоматически.
-
-### Revisit when
-
-Если prototype показывает, что базовой прогрессии недостаточно для 30+ минут gameplay.
+Любая новая механика должна оправдывать увеличение scope.
 
 ---
 
@@ -30,23 +26,13 @@
 **Date:** 2026-09-12  
 **Status:** accepted
 
-### Context
-
-Пользователь предоставил несколько качественных визуализаций меню/gameplay/UI/asset sheet, но отдельно указал, что это не истина.
-
 ### Decision
 
-Использовать их как art direction reference: настроение, palette, material language, density, contrast.
-
-Механика, layout, экономика, UI slots и production assets определяются GDD, graybox и manifest.
+Пользовательские изображения — только art direction/reference. Механика, layout, UI slots и production assets определяются GDD, graybox и manifest.
 
 ### Consequences
 
-Нельзя нарезать concept sheets и считать это готовыми ассетами. Нельзя переносить монеты/звёзды/режимы только потому, что они есть на изображении.
-
-### Revisit when
-
-Никогда без явного решения пользователя.
+Нельзя нарезать concept sheets и считать их готовыми production assets. Нельзя переносить монеты/звёзды/режимы только потому, что они нарисованы.
 
 ---
 
@@ -55,21 +41,13 @@
 **Date:** 2026-09-12  
 **Status:** accepted
 
-### Context
-
-Для pipe puzzle любое несовпадение осей сразу разрушает качество и читаемость.
-
 ### Decision
 
-Straight/corner/T/cross выводятся из одной master connector geometry. Порты строго в центрах сторон. Ориентации создаются поворотом кратно 90° в Godot.
+Straight/corner/T/cross выводятся из одной master connector geometry. Порты строго в центрах сторон. Ориентации создаются поворотом на 90° в Godot.
 
 ### Consequences
 
-Запрещено рисовать типы труб независимо друг от друга. Pipe sprite не содержит tile background.
-
-### Revisit when
-
-Только если gameplay topology полностью меняется.
+Запрещено рисовать типы труб независимо. Pipe sprite не содержит tile background.
 
 ---
 
@@ -78,23 +56,9 @@ Straight/corner/T/cross выводятся из одной master connector geom
 **Date:** 2026-09-12  
 **Status:** accepted
 
-### Context
-
-Готовая картинка клетки для каждого типа/состояния создаёт много ассетов, усложняет поворот и повышает риск несовпадений.
-
 ### Decision
 
-Плитка собирается как:
-
-`tile base + content + energy overlay + FX + interaction feedback`.
-
-### Consequences
-
-Можно переиспользовать tile base, вращать только content и менять glow отдельно.
-
-### Revisit when
-
-Если vertical slice докажет, что shader/overlay подход визуально недостаточен.
+Плитка собирается как `tile base + content + energy overlay + FX + interaction feedback`.
 
 ---
 
@@ -103,21 +67,13 @@ Straight/corner/T/cross выводятся из одной master connector geom
 **Date:** 2026-09-12  
 **Status:** accepted
 
-### Context
-
-Концепты показывают монеты и reward panels, но базовая головоломка не нуждается в экономике для core loop.
-
 ### Decision
 
-В v1 нет обязательных монет, магазина и energy system. Есть только hints, level progress и best moves.
+В v1 нет обязательных монет, магазина и energy system. Есть hints, level progress и best moves.
 
 ### Consequences
 
-Меньше UI, save-state и балансовой работы. Monetization строится на добровольной подсказке и natural-break fullscreen.
-
-### Revisit when
-
-После D+7/D+30 метрик либо если retention явно требует meta progression.
+Монетизация не требует искусственной валюты и строится на voluntary rewarded + natural-break fullscreen.
 
 ---
 
@@ -126,21 +82,9 @@ Straight/corner/T/cross выводятся из одной master connector geom
 **Date:** 2026-09-12  
 **Status:** accepted
 
-### Context
-
-Для подсказок и QA нужен гарантированно валидный ответ, а runtime procedural generation добавляет риск.
-
 ### Decision
 
-V1 levels хранятся в data files и содержат canonical solution orientation. Dev-only generator допустим, runtime generator не обязателен.
-
-### Consequences
-
-Hint прост, уровни воспроизводимы, validator может проверять весь content автоматически.
-
-### Revisit when
-
-После релиза, если нужен endless/daily generation.
+V1 levels хранятся в data files и содержат canonical solution orientation. Dev-only generator допустим; runtime procedural generation не обязателен.
 
 ---
 
@@ -149,18 +93,69 @@ Hint прост, уровни воспроизводимы, validator может
 **Date:** 2026-09-12  
 **Status:** accepted
 
-### Context
-
-Grid puzzle и desktop/Pikabu лучше используют горизонтальный экран. Одновременная production-поддержка portrait увеличит стоимость UI и backgrounds.
-
 ### Decision
 
 Gameplay v1 проектируется landscape, base design size `1600×900`.
 
+---
+
+## ADR-008 — Pikabu is the only release platform for v1
+
+**Date:** 2026-09-12  
+**Status:** accepted
+
+### Context
+
+На текущем этапе задача — быстрее выпускать и проверять игры на Пикабу, не размазывая разработку по нескольким площадкам.
+
+### Decision
+
+Release target v1 — только **Пикабу Игры**. Локальный Web adapter остаётся для разработки. Yandex integration не реализуется сейчас и не входит в release QA.
+
 ### Consequences
 
-Mobile portrait не получает отдельный gameplay layout; при необходимости используется rotate-device overlay.
+- architecture всё равно остаётся platform-abstract;
+- реализуются только `LocalPlatformAdapter` и `PikabuPlatformAdapter`;
+- Pikabu cloud save, ads, lifecycle и promo requirements имеют приоритет;
+- Yandex можно добавить отдельным milestone после проверки игры на Пикабу.
 
 ### Revisit when
 
-Если платформенная статистика после релиза показывает существенную потерю аудитории из-за ориентации.
+После публикации/метрик Пикабу или отдельного решения о мультиплатформенном релизе.
+
+---
+
+## ADR-009 — Higher ad density, but only through Pikabu-safe natural gates
+
+**Date:** 2026-09-12  
+**Status:** accepted
+
+### Context
+
+Игра должна зарабатывать больше на рекламе, но нельзя ломать core loop и retention агрессивными прерываниями.
+
+### Decision
+
+Использовать три рекламных слоя:
+
+1. mobile preloader до `gameStarted()` при поддержке;
+2. rewarded: hint ×1, strong hint ×3, earn hint credit;
+3. fullscreen opportunity после каждого завершённого уровня, но реальный показ только через AdsService gate.
+
+Fullscreen gate v1:
+
+- уровни 1–2 без fullscreen;
+- первый показ не раньше 120 секунд сессии;
+- минимум 120 секунд между фактическими fullscreen impressions;
+- минимум 60 секунд после rewarded;
+- только `result → next level`;
+- `canShow()` непосредственно перед показом;
+- no-fill/adblock/error никогда не блокируют переход.
+
+### Consequences
+
+Рекламных opportunity больше, чем в минимальной схеме, но gameplay не вызывает SDK напрямую и игрок не получает fullscreen в середине решения головоломки.
+
+### Revisit when
+
+После D+1/D+3/D+7 данных по session length, ads/player, show rate и revenue/player.
