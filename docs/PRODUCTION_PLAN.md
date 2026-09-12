@@ -2,13 +2,13 @@
 
 ## Принцип
 
-Идём по протоколу и не пытаемся одновременно писать всю игру и делать весь арт. Главный риск этого проекта — не код, а повтор ошибки «красивый concept sheet → кривые production assets → слабая интеграция».
+Идём по протоколу и не пытаемся одновременно писать всю игру и делать весь арт. Главный release target v1 — **Пикабу Игры**. Локальный Web build обязателен для разработки. Yandex сейчас не реализуем и не тестируем.
 
-Поэтому работа идёт через короткие gates.
+Главный визуальный риск проекта — повтор ошибки «красивый concept sheet → кривые production assets → слабая интеграция», поэтому работа идёт через короткие gates.
 
 ## Milestone 0 — Pre-production
 
-### Уже делаем
+### Готово
 
 - GAME_BRIEF;
 - GDD;
@@ -16,14 +16,16 @@
 - designer brief;
 - decisions;
 - initial asset manifest;
-- project state.
+- project state;
+- Pikabu-first monetization rules.
 
 ### Gate
 
-- [x] идея получила `GO` по Production Score;
+- [x] идея получила `GO`;
 - [x] v1 scope ограничен;
-- [x] визуальные изображения зафиксированы как references, не specification;
-- [ ] пользователь подтверждает базовую механику и scope либо сообщает правки.
+- [x] визуальные изображения — references, не specification;
+- [x] Пикабу зафиксирован как единственная release platform v1;
+- [x] реклама спроектирована через rewarded + natural-break fullscreen + mobile preloader.
 
 ---
 
@@ -31,135 +33,90 @@
 
 ### Цель
 
-Сделать полностью рабочую серую версию puzzle без production-графики.
+Полностью рабочая graybox puzzle без production-графики и без SDK.
 
-### Что реализовать
+### Реализовать
 
 1. Godot 4.7.2 Compatibility project.
-2. Main scene и gameplay scene.
+2. Main + gameplay scene.
 3. Grid 4×4 / 5×5.
-4. Tile model и 90° rotation.
-5. Типы straight/corner/T/cross/source/lamp.
-6. BFS/DFS propagation от source.
-7. Lamp on/off state.
+4. Tile model + 90° rotation.
+5. straight/corner/T/cross/source/lamp.
+6. BFS/DFS propagation.
+7. Lamp on/off.
 8. Win condition.
 9. moves counter.
 10. restart.
 11. mouse + touch semantic input.
 12. 3–5 level JSON.
-13. Web export.
+13. local Web export.
 
 ### Арт
 
-Только graybox: простые цвета/линии/иконки. Никаких массовых красивых ассетов.
+Только graybox: простые формы/линии/цвета. Никакого production asset pack.
 
 ### Gate
 
-- игрок понимает механику без объяснения;
-- соединения работают без двусмысленности;
-- первый Web build работает;
+- механика понятна;
+- соединения однозначны;
+- local Web build работает;
 - desktop + mobile landscape input проверен;
-- core loop хочется повторить несколько раз.
+- core loop хочется повторить.
 
 **Результат:** `GO / PIVOT / KILL`.
-
-Ориентир: 0.5–1 рабочий день.
 
 ---
 
 ## Milestone 2 — UX graybox + slot freeze
 
-### Цель
+Собрать Main menu, Gameplay, Pause, Result, Settings и при необходимости Level select.
 
-Получить реальную композицию игры, на основе которой дизайнер делает production assets.
-
-### Экраны
-
-- Main menu;
-- Gameplay;
-- Pause;
-- Result;
-- Settings;
-- минимальный Level select, если нужен на этом этапе.
-
-### Фиксируем
+Зафиксировать:
 
 - board rect на 1600×900;
-- tile display size для каждой целевой board size;
-- HUD rectangles;
-- button rectangles;
-- panel minimum sizes;
+- tile display size;
+- HUD/button/panel rectangles;
 - safe areas;
 - background crop rules;
-- динамический/запечённый текст.
+- dynamic/baked text.
 
-После этого обновляется `ASSET_MANIFEST.md`: `TBD` заменяется точными display/source contracts.
+После этого `ASSET_MANIFEST.md` получает реальные размеры.
 
 ### Gate
 
-Graybox корректно выглядит минимум на:
-
-- 1280×720;
-- 1366×768;
-- 1600×900;
-- 1920×1080;
-- mobile landscape;
-- narrow landscape iframe.
-
-Ориентир: 0.5 рабочего дня.
+Graybox корректен на 1280×720, 1366×768, 1600×900, 1920×1080, narrow landscape iframe и mobile landscape.
 
 ---
 
 ## Milestone 3 — Visual vertical slice
 
-### Цель
-
-Сделать **один настоящий игровой экран**, который реально выглядит на уровне утверждённого art direction.
-
-### Сначала только 3–5 ключевых assets
+Сначала только 3–5 ключевых assets:
 
 1. tile base;
-2. straight/corner pipe family из одной master geometry;
+2. straight/corner family из одной master geometry;
 3. generator;
 4. lamp off/on;
-5. один UI button/panel family или background frame.
+5. один UI family/background fragment.
 
-### Проверка
-
-- импорт в Godot;
-- реальный screenshot 1600×900;
-- screenshot 1366×768;
-- mobile landscape screenshot;
-- сравнение с art direction.
-
-### Gate
-
-Если реальная игра выглядит хуже reference — **не генерируем остальной пак**, а правим pipeline/геометрию/материалы.
-
-Ориентир: 0.5–1 день вместе с итерацией дизайна.
+После интеграции делаем реальные screenshots и сравниваем с art direction. Если игра хуже reference — массовый арт не запускаем.
 
 ---
 
 ## Milestone 4 — Architecture freeze
 
-### Закрыть до массового content
+Зафиксировать:
 
 - board/data contracts;
 - scene tree;
 - input;
 - SaveService;
-- AdsService interface;
-- PlatformService interface;
+- AdsService;
+- PlatformService;
 - AudioService;
-- level schema;
-- validator;
+- level schema + validator;
 - responsive rules.
 
-### Gate
-
-Крупные архитектурные изменения после этого — только при blocker.
-
-Ориентир: 0.25–0.5 дня.
+Adapters v1: `LocalPlatformAdapter` и `PikabuPlatformAdapter`.
 
 ---
 
@@ -167,141 +124,120 @@ Graybox корректно выглядит минимум на:
 
 Только после approved vertical slice.
 
-### Gameplay
+Gameplay: pipe family, energy overlays, generator, lamp states, blockers, hover/press, energy/win FX.
 
-- pipe topology family;
-- energized overlays;
-- generator;
-- lamp states;
-- blockers/empty;
-- selection/hover/press;
-- energy FX;
-- win FX.
+UI: scalable panels, buttons/states, icons, logo, loading visuals, menu/gameplay environment.
 
-### UI
-
-- scalable panels;
-- buttons + states;
-- icons;
-- logo;
-- loading visuals;
-- menu/gameplay environment background.
-
-### Promo
-
-**Не сейчас.** Icon/cover/screenshots делаются после финальной интеграции, чтобы реклама игры соответствовала реальной игре.
-
-Ориентир: зависит от дизайнера, но код не блокируется — gameplay уже работает на graybox.
+Promo assets — только после финальной интеграции.
 
 ---
 
 ## Milestone 6 — Content production
-
-### Level plan
 
 - 1–3 tutorial;
 - 4–15 easy;
 - 16–35 medium;
 - 36–50 hard.
 
-### Инструменты
-
-- validator;
-- auto-solve against canonical solution;
-- batch level check;
-- optional dev generator.
-
-### Gate
-
-Все 50 уровней:
-
-- валидны;
-- не стартуют solved;
-- имеют хотя бы одну lamp;
-- имеют корректную canonical solution;
-- проходят автоматически validator.
-
-Ориентир: 0.5–1 день при генераторе/шаблонах.
+Все 50 уровней проходят validator и имеют canonical solution.
 
 ---
 
 ## Milestone 7 — Progression, save, audio
 
 - unlocked level;
+- completed levels;
 - best moves;
 - hint balance;
 - settings;
 - local-first save;
-- cloud sync adapter;
 - rotate/energy/lamp/win/UI audio;
 - lifecycle mute.
 
 Gate: reload не теряет прогресс.
 
-Ориентир: 0.5 дня.
-
 ---
 
-## Milestone 8 — Platforms + monetization
+## Milestone 8 — Pikabu integration + monetization
 
-### Platform abstraction
+### Platform
 
-- local fallback;
-- Yandex adapter;
-- Pikabu adapter.
+- load Pikabu SDK;
+- `PkbSDK.init()` один раз;
+- player/auth lifecycle;
+- `gameStarted()` только когда первый interactive screen готов;
+- cloud save;
+- pause/tab lifecycle;
+- local fallback остаётся рабочим.
 
-### Rewarded
+### Ads
 
-- hint ×1;
-- optional hint ×3.
+#### Mobile preloader
 
-### Fullscreen
+- до `gameStarted()`;
+- только mobile/при поддержке;
+- failure не блокирует boot.
 
-- natural break после уровня;
-- configurable cooldown;
-- корректное pause/audio/input restore.
+#### Rewarded
+
+1. hint ×1;
+2. strong hint ×3;
+3. earn hint credit.
+
+#### Fullscreen
+
+Opportunity после каждого completed level, но фактический показ только через AdsService gate:
+
+- первые 2 уровня — без fullscreen;
+- first show не раньше 120 sec session age;
+- минимум 120 sec между фактическими impressions;
+- минимум 60 sec после rewarded;
+- только transition `result → next level`;
+- `canShow()` непосредственно перед show;
+- no-fill/adblock → мгновенно продолжить без рекламы.
 
 ### Gate
 
-- no SDK → локальная игра работает;
-- no-fill → игра работает;
-- ad close → возвращает корректное состояние;
-- награда не выдаётся без success callback.
-
-Ориентир: 0.5–1 день.
+- no SDK local build работает;
+- no-fill/adblock не ломает игру;
+- close/error возвращает корректное состояние;
+- награда не выдаётся без success;
+- двойной ad request невозможен;
+- звук/input корректно восстанавливаются;
+- cloud save проходит smoke test.
 
 ---
 
-## Milestone 9 — QA / release candidate
+## Milestone 9 — Pikabu QA / release candidate
 
-- browser smoke;
-- resize;
+- desktop Chromium;
+- mobile Chromium;
+- Safari/iOS при доступности;
+- resize/narrow iframe;
 - mobile landscape;
 - tab hide/show;
-- reload/save;
-- ad unavailable;
-- repeated ads;
+- reload/local+cloud save;
+- ad unavailable/adblock;
+- rewarded success/fail;
+- fullscreen cooldown;
+- repeated transitions;
 - audio lifecycle;
-- console errors;
+- console/network errors;
 - load time/build size;
-- Yandex draft;
-- Pikabu test.
+- Pikabu test/staging.
 
-После RC никаких новых фич.
-
-Ориентир: 0.5 дня + время модераций.
+После RC — никаких новых фич.
 
 ---
 
-## Milestone 10 — Store/promo package
+## Milestone 10 — Pikabu promo/release package
 
 После финального gameplay:
 
-- icon;
-- horizontal cover;
+- квадратная promo от 1024×1024;
+- горизонтальная promo от 1920×1080 16:9;
 - screenshots;
-- short description;
-- full description;
+- short/full description;
 - controls/how to play;
 - age/content fields;
 - release report.
@@ -310,27 +246,21 @@ Gate: reload не теряет прогресс.
 
 # Общий ориентир
 
-При отсутствии неожиданных проблем это проект класса A:
-
-- **код + content + интеграции:** примерно 3–5 рабочих дней;
-- **финальный срок зависит в основном от скорости согласования и качества asset iteration**, а не от сложности gameplay.
+Factory target: примерно 3–5 рабочих дней к release candidate при отсутствии неожиданных проблем и задержек art iteration.
 
 ## Что не параллелим
 
-Нельзя одновременно:
+- full asset pack до slot freeze;
+- независимое рисование topology труб;
+- лишнюю экономику/магазин;
+- Yandex integration;
+- promo screenshots до финального gameplay.
 
-- делать весь asset pack и ещё менять layout;
-- рисовать трубы независимо друг от друга;
-- добавлять валюту/магазин до подтверждения необходимости;
-- генерировать promo screenshots до финального gameplay.
-
-## Что можно параллелить
-
-После slot freeze:
+## Что можно параллелить после slot freeze
 
 - production art;
 - level data;
 - audio sourcing;
-- platform adapter preparation.
+- Pikabu adapter preparation.
 
-Но integration screenshot первых assets остаётся обязательным gate перед массовым арт-паком.
+Integration screenshot первых assets остаётся обязательным gate.
